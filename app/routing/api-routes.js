@@ -32,18 +32,25 @@ var handlebarOptions = {
 // ===============================================================================
 
 module.exports = function(app){
+  
 	app.post('/api/tables', function(req, res){         
         var mailOptions={
             to : req.body.to,
-            subject : req.body.subject,
+            subject : "New Visit Update from WhatsPup",
             text : req.body.text,
             template: 'email_body',
             context : {
-                phoneNumber : req.body.phoneNumber
+                to: req.body.to,
+                time: req.body.time,
+                food: req.body.food,
+                water: req.body.water,
+                play: req.body.play,    
+                treats: req.body.treats,
+                meds: req.body.meds,
+                message: req.body.message
             }
         }
-        
-        console.log(mailOptions);
+        console.log(req.body); 
         transporter.use('compile', hbs(handlebarOptions));
         
         transporter.sendMail(mailOptions, function(error, response){
