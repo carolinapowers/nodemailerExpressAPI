@@ -9,19 +9,14 @@ var waitListData 	= require('../data/waitinglist-data.js');
 var path 			= require('path');
 var nodemailer      = require('nodemailer');
 var bodyParser      = require('body-parser');
+var options = require ('../credentials.js');
 var hbs = require('nodemailer-express-handlebars');
 var smtpTransport = require('nodemailer-smtp-transport');
 var parseUrlencoded = bodyParser.urlencoded({ extended: false });
-var options = {
-    service: "Gmail",
-    auth: {
-        user: "",
-        pass: ""
-    }
-};
+
 var transporter = nodemailer.createTransport(smtpTransport(options));
 
-var options2 = {
+var handlebarOptions = {
      viewEngine: {
          extname: '.hbs',
          layoutsDir: 'app/routing/views/email/',
@@ -49,7 +44,7 @@ module.exports = function(app){
         }
         
         console.log(mailOptions);
-        transporter.use('compile', hbs(options2));
+        transporter.use('compile', hbs(handlebarOptions));
         
         transporter.sendMail(mailOptions, function(error, response){
         if(error){
