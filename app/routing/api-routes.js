@@ -50,7 +50,7 @@ module.exports = function(app){
                 message: req.body.message
             }
         }
-        console.log(req.body); 
+        console.log(req.body);
         transporter.use('compile', hbs(handlebarOptions));
         
         transporter.sendMail(mailOptions, function(error, response){
