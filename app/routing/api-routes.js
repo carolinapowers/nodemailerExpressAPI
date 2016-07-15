@@ -14,6 +14,7 @@ var hbs = require('nodemailer-express-handlebars');
 var smtpTransport = require('nodemailer-smtp-transport');
 var parseUrlencoded = bodyParser.urlencoded({ extended: false });
 var jsonfile = require('jsonfile');
+var fs = require('fs');
 
 
 
@@ -38,7 +39,7 @@ module.exports = function(app){
   
 	app.post('/api/tables', function(req, res){
         
-        var file ='data';
+        var file ='data.json';
         var incrementor = 0; 
         var obj =  {
                 to: req.body.subject,
@@ -48,16 +49,32 @@ module.exports = function(app){
             
             }
 
-        console.log(obj);
         jsonfile.spaces=4
-        jsonfile.writeFileSync (file+'json', obj); 
         
-        jsonfile.readFile(file, function (err, obj){
-            if (obj != null) {
-                file = file + (incrementor + 1) + '.json';
-                jsonfile.writeFileSync (file, obj); 
-            }
-        })
+//        if (file != null) {
+//           jsonfile.writeFileSync (file, obj);  
+//        }
+        
+        fs.appendFile('./data.json', JSON.stringify(obj, null, 4), (err) => {
+        if (err) throw err;
+            console.log('The "data to append" was appended to file!');
+        });
+        
+        
+//function appendObject(o){
+//  var configFile = fs.readFileSync('./data.json');
+//  var config = JSON.parse(configFile);
+//  config[o];
+//  var configJSON = JSON.stringify(config);
+//    fs.appendFile('./data.json', configJSON, (err) => {
+//        if (err) throw err;
+//    console.log('The "data to append" was appended to file!');
+//    });
+//  //fs.writeFileSync('./data.json', configJSON);
+//}
+//
+//appendObject(obj);
+        
 //        var mailOptions={
 //            to : req.body.to,
 //            subject : "New Visit Update from WhatsPup",
