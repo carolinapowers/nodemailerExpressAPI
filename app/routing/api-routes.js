@@ -13,6 +13,9 @@ var options = require ('../credentials.js');
 var hbs = require('nodemailer-express-handlebars');
 var smtpTransport = require('nodemailer-smtp-transport');
 var parseUrlencoded = bodyParser.urlencoded({ extended: false });
+var jsonfile = require('jsonfile');
+
+
 
 var transporter = nodemailer.createTransport(smtpTransport(options));
 
@@ -33,44 +36,65 @@ var handlebarOptions = {
 
 module.exports = function(app){
   
-	app.post('/api/tables', function(req, res){         
-        var mailOptions={
-            to : req.body.to,
-            subject : "New Visit Update from WhatsPup",
-            text : req.body.text,
-            template: 'email_body',
-            context : {
-                to: req.body.to,
-                time: req.body.time,
-                food: req.body.food,
-                water: req.body.water,
-                play: req.body.play,    
-                treats: req.body.treats,
-                meds: req.body.meds,
-                message: req.body.message
+	app.post('/api/tables', function(req, res){
+        
+        var file ='data';
+        var incrementor = 0; 
+        var obj =  {
+                to: req.body.subject,
+                time: req.body.phoneNumber,
+                food: req.body.to,
+                water: req.body.text
+            
             }
-        }
-        console.log(req.body);
-        transporter.use('compile', hbs(handlebarOptions));
+
+        console.log(obj);
+        jsonfile.spaces=4
+        jsonfile.writeFileSync (file+'json', obj); 
         
-        transporter.sendMail(mailOptions, function(error, response){
-        if(error){
-            console.log('email error ', error);
-        res.end("error");
-        }else{
-            console.log("Message sent: " + response);
-            res.end("sent");
-         }
-        });
-        
-		if(tableData.length < 5 ){
-			tableData.push(req.body);
-			res.json(true); // KEY LINE
-		}
-		else{
-			waitListData.push(req.body);
-			res.json(false); // KEY LINE
-		}
+        jsonfile.readFile(file, function (err, obj){
+            if (obj != null) {
+                file = file + (incrementor + 1) + '.json';
+                jsonfile.writeFileSync (file, obj); 
+            }
+        })
+//        var mailOptions={
+//            to : req.body.to,
+//            subject : "New Visit Update from WhatsPup",
+//            text : req.body.text,
+//            template: 'email_body',
+//            context : {
+//                to: req.body.to,
+//                time: req.body.time,
+//                food: req.body.food,
+//                water: req.body.water,
+//                play: req.body.play,    
+//                treats: req.body.treats,
+//                meds: req.body.meds,
+//                message: req.body.message
+//            }
+//        }
+//        console.log(req.body);
+//        transporter.use('compile', hbs(handlebarOptions));
+//        
+//        transporter.sendMail(mailOptions, function(error, response){
+//        if(error){
+//            console.log('email error ', error);
+//        res.end("error");
+//        }else{
+//            console.log("Message sent: " + response);
+//            res.end("sent");
+//         }
+//        });
+//        
+//		if(tableData.length < 5 ){
+//			tableData.push(req.body);
+//			res.json(true); // KEY LINE
+//		}
+//		else{
+//			waitListData.push(req.body);
+//			res.json(false); // KEY LINE
+//		}
     });
     
     
